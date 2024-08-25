@@ -10,16 +10,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.FindBy;
 
 import java.time.Duration;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 
 public class Order_stepDefs {
-    WebElement locationSearch, menuItem, basketItem, cart, itemPrice, checkout, startOrder;
+    WebElement locationSearch, menuItem, basketItem, cart, itemPrice, checkout, name, cmob, cemail, caddress, clandmark, set_order_time;
     WebDriver driver = Hooks.wDriver;
 
     @Given("I have launched the application")
@@ -35,15 +31,17 @@ public class Order_stepDefs {
     public void i_enter_the_location_as(String location) {
         locationSearch = driver.findElement(By.xpath("//input[@type='text']"));
         locationSearch.sendKeys(location + " Railway Station, Agarkar Nagar");
-        this.run(5000);
+        this.run(2000);
     }
 
     @When("I select the very first suggestion from the list")
     public void i_select_the_very_first_suggestion_from_the_list() {
         locationSearch.sendKeys(Keys.ENTER);
         locationSearch.click();
-       // startOrder = driver.findElement(By.xpath("//span[text()='Start your order']"));
-       //startOrder.click();
+
+        // valid only for Set Order Time (What time would you like your order?)
+        //set_order_time = driver.findElement(By.xpath("//button[@class='button button--secondary text-center']"));
+        //set_order_time.click();
     }
 
     @Then("I should land on the Deals page")
@@ -75,48 +73,53 @@ public class Order_stepDefs {
 
     @Then("I should see the pizza {string} is added to the cart")
     public void i_should_see_the_pizza_is_added_to_the_cart(String cartItem) {
-        cart = driver.findElement(By.xpath("//*[contains(@title, 'Click to make changes')]"));
-        assertEquals(cartItem, cart.isDisplayed());
-        System.out.println(cartItem+" 33333333333"+cart.isDisplayed());
+        //cart = driver.findElement(By.xpath("//*[contains(@title, 'Click to make changes')]"));
+        cart = driver.findElement(By.linkText("Click to make changes"));
+        Assert.assertTrue(cart.isDisplayed());
     }
 
     @Then("price is also displayed correctly")
     public void price_is_also_displayed_correctly() {
-        itemPrice = driver.findElement(By.xpath("//*[contains(@data-synth, 'basket-value')]"));
+        //itemPrice = driver.findElement(By.xpath("//*[contains(@data-synth, 'basket-value')]"));
+        itemPrice = driver.findElement(By.className("amountdue"));
         Assert.assertTrue(itemPrice.isDisplayed());
+        System.out.println(itemPrice.isDisplayed());
     }
+
     @Then("I click on the Checkout button")
     public void i_click_on_the_Checkout_button() {
         checkout = driver.findElement(By.xpath("//a[.//span[text()='Checkout']]"));
         checkout.click();
     }
+
     @Then("I should be landed on the secured checkout page")
-    public void i_should_be_landed_on_the_secured_checkout_page()
-    {
+    public void i_should_be_landed_on_the_secured_checkout_page() {
         //Validate secure page
-
+        checkout = driver.findElement(By.xpath("//span[text()='Secure Checkout']"));
+        Assert.assertEquals(checkout.getText(), "Secure Checkout");
     }
+
     @And("I enter the personal details {string} and {string} and {string} and address details {string} and {string}")
-    public void iEnterThePersonalDetailsAndAndAndAddressDetailsAnd(String cname, String mob, String email, String address, String landmark)
-    {
-        WebElement name = driver.findElement(By.id("checkout__name"));
+    public void iEnterThePersonalDetailsAndAndAndAddressDetailsAnd(String cname, String mob, String email, String address, String landmark) {
+        name = driver.findElement(By.id("checkout__name"));
         name.sendKeys(cname);
-
-        WebElement cmob = driver.findElement(By.id("checkout__phone"));
+        cmob = driver.findElement(By.id("checkout__phone"));
         cmob.sendKeys(mob);
-
-        WebElement cemail = driver.findElement(By.id("checkout__email"));
+        cemail = driver.findElement(By.id("checkout__email"));
         cemail.sendKeys(email);
-
-        WebElement caddress = driver.findElement(By.id("checkout__deliveryAddress.interior"));
+        caddress = driver.findElement(By.id("checkout__deliveryAddress.interior"));
         caddress.sendKeys(address);
-
-        WebElement clandmark = driver.findElement(By.id("checkout__deliveryAddress.notes"));
+        clandmark = driver.findElement(By.id("checkout__deliveryAddress.notes"));
         clandmark.sendKeys(landmark);
+        this.run(5000);
+
     }
 
-    void run(int time)
-    {try {Thread.sleep(time);}
-        catch (Exception e) {e.getMessage();}
+    void run(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (Exception e) {
+            e.getMessage();
+        }
     }
 }
